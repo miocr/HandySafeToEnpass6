@@ -47,7 +47,7 @@ namespace HandySafeConverter
 
             // Create CSV header line
             headerNames.Insert(0, "\"Title\""); //First column 
-            headerNames.Add("\"Note\"");  // Last column
+            headerNames.Add("\"Note\"");  // Last columns
             headerNames.Add("\"Tags\"");
             csvText.AppendLine(string.Join(",", headerNames));
 
@@ -91,7 +91,7 @@ namespace HandySafeConverter
                         }
                     }
 
-                    // Note field as prelast column
+                    // Note field as one from thelast column
                     XmlNode noteNode = card.SelectSingleNode("Note");
                     if (noteNode != null)
                     {
@@ -102,7 +102,7 @@ namespace HandySafeConverter
                         isEmpty = false;
                     }
 
-                    // Folder name as tag in tags last column
+                    // Folder name as tag last column
                     fieldValues[allFieldNames.Count + 2] = "\"" + folderName + "\"";
 
                     if (!isEmpty)

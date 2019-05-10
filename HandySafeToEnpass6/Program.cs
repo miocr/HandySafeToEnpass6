@@ -7,14 +7,17 @@ namespace HandySafeConverter
     {
         public static void Main(string[] args)
         {
+            if (args.Length == 1)
+            {
+                string fileName = args[0];
+                if (File.Exists(fileName))
+                {
+                    Converter converter = new Converter();
+                    string csv = converter.Convert(fileName);
+                    File.WriteAllText(fileName + ".csv", csv);
+                }
+             }
 
-
-            string fileName = "//Users//macwhite//Desktop//all-safe.xml";
-            var file = File.Open(fileName, FileMode.Open);
-            file.Close();
-            Converter converter = new Converter();
-            string csv = converter.Convert(fileName);
-            File.WriteAllText(fileName + ".csv", csv);
         }
     }
 }
