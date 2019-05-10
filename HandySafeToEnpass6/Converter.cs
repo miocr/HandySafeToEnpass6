@@ -14,6 +14,12 @@ namespace HandySafeConverter
         {
         }
 
+        /* Output CSV Format - first line header, comma delimited items, nothing for feild without value
+         *        
+         * "Title, "CustomField1","CustomField2","*CustomField3",....,"CustomFieldN","Note","Tags"
+         * "Card",  "Value"      ,              ,"secretValue"  ,    ,              ,"note","tag1,tag2"     
+         */
+
         internal string Convert(string xmlFile)
         {
             List<string> allFieldNames = new List<string>() {"název","login","e-mail","heslo","url" };
@@ -22,19 +28,23 @@ namespace HandySafeConverter
 
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(xmlFile);
-            XmlNodeList cards = xmlDoc.SelectNodes("/HandySafe/Folder/Card");
-            foreach (XmlNode card in cards)
+
+            // Inspect all cards and create name array for all used field names
+            // and CSV header line
+            int unnamedFieldIndex = 0;
+            foreach (XmlNode card in xmlDoc.SelectNodes("/HandySafe/Folder/Card"))
             {
                 foreach (XmlNode field in card.SelectNodes("Field"))
                 {
                     string fieldName = field.Attributes["name"].Value.Trim();
 
                     if (string.IsNullOrEmpty(fieldName))
-                        fieldName = field.InnerText.Trim();
+                        fieldName = String.Format("Field{0}",unnamedFieldIndex++); ;
 
                     if (!allFieldNames.Contains(fieldName.ToLower()))
                     {
                         allFieldNames.Add(fieldName.ToLower());
+
                         // Prefix * in column name for import as secret field
                         fieldName = fieldName.Replace("\"","'");
                         if (field.Attributes["type"] != null && field.Attributes["type"].Value == "6")
@@ -45,12 +55,13 @@ namespace HandySafeConverter
                 }
             }
 
-            // Create CSV header line
+            // Prepare CSV header line Title,Custom1,Custom2,...,CustomX,Note,Tags
             headerNames.Insert(0, "\"Title\""); //First column 
             headerNames.Add("\"Note\"");  // Last columns
             headerNames.Add("\"Tags\"");
             csvText.AppendLine(string.Join(",", headerNames));
 
+            unnamedFieldIndex = 0;
             XmlNodeList folders = xmlDoc.SelectNodes("/HandySafe/Folder");
             foreach (XmlNode folder in folders)
             {
@@ -60,12 +71,12 @@ namespace HandySafeConverter
                 foreach (XmlNode card in folder.SelectNodes("Card"))
                 {
                     string cardName = card.Attributes["name"].Value.Trim();
-                    // Title value (card name) is necessary
+                    // Title value (card name) is mandatory
                     if (String.IsNullOrEmpty(cardName))
                         continue;
                     cardName = cardName.Replace("\"", "'");
 
-                    // New array for line item values
+                    // New array for field values
                     string[] fieldValues = new string[allFieldNames.Count + 3];
 
                     // Card name as Title value in first column
@@ -78,8 +89,9 @@ namespace HandySafeConverter
                         if (!String.IsNullOrEmpty(field.InnerText))
                         {
                             string fieldName = field.Attributes["name"].Value.Trim();
+
                             if (string.IsNullOrEmpty(fieldName))
-                                fieldName = field.InnerText.Trim();
+                                fieldName = String.Format("Field{0}", unnamedFieldIndex++);
 
                             string fieldValue = field.InnerText.Trim();
                             fieldValue = fieldValue.Replace("\"", "'");
@@ -91,7 +103,7 @@ namespace HandySafeConverter
                         }
                     }
 
-                    // Note field as one from thelast column
+                    // Note field as one from thelast column (Note)
                     XmlNode noteNode = card.SelectSingleNode("Note");
                     if (noteNode != null)
                     {
@@ -102,7 +114,7 @@ namespace HandySafeConverter
                         isEmpty = false;
                     }
 
-                    // Folder name as tag last column
+                    // Folder name as tag last column (Tags)
                     fieldValues[allFieldNames.Count + 2] = "\"" + folderName + "\"";
 
                     if (!isEmpty)
