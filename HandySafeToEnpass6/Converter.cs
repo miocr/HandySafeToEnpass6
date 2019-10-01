@@ -36,10 +36,11 @@ namespace HandySafeConverter
             {
                 foreach (XmlNode field in card.SelectNodes("Field"))
                 {
-                    string fieldName = field.Attributes["name"].Value.Trim();
-
-                    if (string.IsNullOrEmpty(fieldName))
-                        fieldName = String.Format("Field{0}",unnamedFieldIndex++); ;
+                    string fieldName = String.Empty;
+                    if (field.Attributes["name"] == null ||  string.IsNullOrEmpty(field.Attributes["name"].Value))
+                        fieldName = String.Format("Field{0}",unnamedFieldIndex++); 
+                    else
+                        fieldName = field.Attributes["name"].Value.Trim();
 
                     if (!allFieldNames.Contains(fieldName.ToLower()))
                     {
@@ -88,10 +89,11 @@ namespace HandySafeConverter
                     {
                         if (!String.IsNullOrEmpty(field.InnerText))
                         {
-                            string fieldName = field.Attributes["name"].Value.Trim();
-
-                            if (string.IsNullOrEmpty(fieldName))
+                            string fieldName = String.Empty;
+                            if (field.Attributes["name"] == null || string.IsNullOrEmpty(field.Attributes["name"].Value))
                                 fieldName = String.Format("Field{0}", unnamedFieldIndex++);
+                            else
+                                fieldName = field.Attributes["name"].Value.Trim();
 
                             string fieldValue = field.InnerText.Trim();
                             fieldValue = fieldValue.Replace("\"", "'");
