@@ -119,6 +119,7 @@ namespace HandySafeConverter
                     }
 
                     // Folder name as tag last column (Tags)
+                    // Add import date stamp as Tag for all imported items
                     fieldValues[allFieldNames.Count + 2] = "\"" + folderName + "|.import " + importTimeStamp + "\"";
 
                     if (!isEmpty)
