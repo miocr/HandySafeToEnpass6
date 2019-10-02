@@ -26,6 +26,8 @@ namespace HandySafeConverter
             List<string> headerNames = new List<string>()   {"Název","Login","Email","*Heslo","Website" };
             StringBuilder csvText = new StringBuilder();
 
+            string importTimeStamp = DateTime.Now.ToString("yyyy-MM-dd");
+
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(xmlFile);
 
@@ -117,7 +119,7 @@ namespace HandySafeConverter
                     }
 
                     // Folder name as tag last column (Tags)
-                    fieldValues[allFieldNames.Count + 2] = "\"" + folderName + "\"";
+                    fieldValues[allFieldNames.Count + 2] = "\"" + folderName + "|.import " + importTimeStamp + "\"";
 
                     if (!isEmpty)
                         csvText.AppendLine(string.Join(",", fieldValues));

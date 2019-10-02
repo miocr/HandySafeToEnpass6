@@ -2,9 +2,11 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/HandySafeToEnpass6/.vs/HandySafeToEnpass6/v16/Server/sqlite3
+/.vs/HandySafeToEnpass6/v15
 /.vs/HandySafeToEnpass6/v16
-/HandySafeToEnpass6/bin/Debug
-/HandySafeToEnpass6/obj/x86/Debug
+/HandySafeToEnpass6/.vs/HandySafeToEnpass6
+/HandySafeToEnpass6/bin
+/HandySafeToEnpass6/obj
 /HandySafeToEnpass6/HandySafeToEnpass6.csproj.user
 /HandySafeToEnpass6.sln
+
